@@ -1,0 +1,6 @@
+# ninja log v5
+1	28	1705224149382449563	CMakeFiles/test.dir/RacingMain.cpp.o	ffa23b505becf598
+0	235	1705224149588855191	CMakeFiles/test.dir/main.cpp.o	48b082a756a78259
+1	236	1705224149589263571	CMakeFiles/test.dir/Car.cpp.o	9bf525557888a842
+2	30	1705224336088889020	CMakeFiles/test.dir/RacingMain.cpp.o	ffa23b505becf598
+31	65	1705224336121905982	test	c554d7b7d677c3aa
