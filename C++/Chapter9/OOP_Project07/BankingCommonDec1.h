@@ -1,0 +1,13 @@
+//
+// Created by 김영현 on 1/28/24.
+//
+
+#ifndef OOP_PROJECT07_BANKINGCOMMONDEC1_H
+#define OOP_PROJECT07_BANKINGCOMMONDEC1_H
+
+// 공통헤더 및 상수선언들
+const int NAME_LEN =  20;
+
+enum {MAKE = 1, DEPOSIT, WITHDRAW, INQUIRE, EXIT};
+
+#endif //OOP_PROJECT07_BANKINGCOMMONDEC1_H

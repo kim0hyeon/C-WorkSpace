@@ -8,20 +8,20 @@ enum {MAKE = 1, DEPOSIT, WITHDRAW, INQUIRE, EXIT};
 
 /*
  * 클래스 이름: Account
- * 클래스 유형: Entity 클래스
+ * 클래스 유형: Base 클래스
  * */
 
 class Account{
 private:
     int accID;
-    int balance;
     char * cusName;
+protected:
+    int balance;
 public:
     Account(int ID, int money, char * name);
     Account(const Account & ref);
-
+    virtual void Deposit(int money) = 0;
     int GetAccID() const;
-    void Deposit(int money);
     int WithDraw(int money);
     void ShowAccInfo() const;
     ~Account();
@@ -38,8 +38,6 @@ Account::Account(const Account &ref) : accID(ref.accID), balance(ref.balance){
 }
 
 int Account::GetAccID() const { return accID; }
-
-void Account::Deposit(int money) { balance += money; }
 
 int Account::WithDraw(int money) {
     if (money > balance)
@@ -59,6 +57,58 @@ Account::~Account() {
 }
 
 /*
+ * 클래스 이름: NormalAccount
+ * 클래스 유형: Entity 클래스
+ * */
+
+class NormalAccount : public Account{
+private:
+    int rate;
+public:
+    NormalAccount(int ID, int money, char * name, int myRate);
+    void Deposit(int money);
+};
+
+NormalAccount::NormalAccount(int ID, int money, char *name, int myRate)
+: Account(ID, money, name), rate(myRate) { }
+
+void NormalAccount::Deposit(int money) {
+    balance += (int)(money * (1+rate*0.01));
+}
+
+/*
+ * 클래스 이름: HighCreditAccount
+ * 클래스 유형: Entity 클래스
+ * */
+
+class HighCreditAccount : public Account{
+private:
+    int rate;
+    int credit;
+public:
+    HighCreditAccount(int ID, int money, char * name, int myRate, int myCredit);
+    void Deposit(int money);
+};
+
+HighCreditAccount::HighCreditAccount(int ID, int money, char *name, int myRate, int myCredit)
+: Account(ID, money, name), rate(myRate), credit(myCredit){ }
+
+void HighCreditAccount::Deposit(int money) {
+    switch (credit){
+        case 1:
+            rate += 7;
+            break;
+        case 2:
+            rate += 4;
+            break;
+        case 3:
+            rate += 2;
+            break;
+    }
+    balance += (int)(money * (1+rate*0.01));
+}
+
+/*
  * 클래스 이름: AccountHandler
  * 클래스 유형: 컨트롤(control) 클래스
  * */
@@ -71,6 +121,8 @@ public:
     AccountHandler();
     void ShowMenu() const;
     void MakeAccount();
+    void MakeNormalAccount();
+    void MakeHighCreditAccount();
     void DepositMoney();
     void WithDrawMoney();
     void ShowAllAccInfo() const;
@@ -89,17 +141,53 @@ void AccountHandler::ShowMenu() const {
 }
 
 void AccountHandler::MakeAccount() {
+    int menu;
+    cout << "[계좌종류선택]" << endl;
+    cout << "1.보통예금계좌 2.신용신뢰계좌" << endl;
+    cout << "선택: "; cin >> menu;
+
+    switch(menu){
+        case 1:
+            MakeNormalAccount();
+            break;
+        case 2:
+            MakeHighCreditAccount();
+            break;
+    }
+}
+
+void AccountHandler::MakeNormalAccount() {
     int id;
     char name[NAME_LEN];
     int balance;
+    int rate;
 
-    cout << "[계좌개설]" << endl;
+    cout << "[보통예금계좌개설]" << endl;
     cout << "계좌ID: "; cin >> id;
     cout << "이 름: "; cin >> name;
     cout << "입금액: "; cin >> balance;
+    cout << "이자율: "; cin >> rate;
     cout << endl;
 
-    accArr[accNum++] = new Account(id, balance, name);
+    accArr[accNum++] = new NormalAccount(id, balance, name, rate);
+}
+
+void AccountHandler::MakeHighCreditAccount() {
+    int id;
+    char name[NAME_LEN];
+    int balance;
+    int rate;
+    int credit;
+
+    cout << "[신용신뢰계좌개설]" << endl;
+    cout << "계좌ID: "; cin >> id;
+    cout << "이 름: "; cin >> name;
+    cout << "입금액: "; cin >> balance;
+    cout << "이자율: "; cin >> rate;
+    cout << "신용등급(1toA, 2toB, 3toC): "; cin >> credit;
+    cout << endl;
+
+    accArr[accNum++] = new HighCreditAccount(id, balance, name, rate, credit);
 }
 
 void AccountHandler::DepositMoney() {
@@ -118,6 +206,8 @@ void AccountHandler::DepositMoney() {
     }
     cout << "입금할 계좌id가 없습니다. 메뉴로 돌아갑니다." << endl << endl;
 }
+
+
 
 void AccountHandler::WithDrawMoney() {
     int money;
